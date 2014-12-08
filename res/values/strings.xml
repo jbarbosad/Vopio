@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Vopio</string>
+    <string name="settings">Settings</string>
+    <string name="new_actvity">Save</string>
+    <string name="routes">Words</string>
+    <string name="workouts">Snippets</string>
+    <string name="history">Profile</string>
+    <string name="slider">Slider</string>
+    <string name="progress">Progress</string>
+    <string name="slide_btn">Slide Button</string>
+    <string name="radio_btn">Radio</string>
+    <string name="checkbox">Checkbox</string>
+    <string name="selected">Selected</string>
+    <string name="tab">Tab</string>
+    <string name="button">Button</string>
+    <string name="tap_on_mic">Tap over the Microphone to transcribe</string>
+    <string name="speech_prompt">Say something&#8230;</string>
+    <string name="speech_not_supported">Sorry, but you device does not support speech-to-text technology</string>
+    <string name="nulo"></string>
+
+</resources>
