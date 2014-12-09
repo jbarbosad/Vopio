@@ -38,6 +38,7 @@ public class NewActivity extends Fragment
 		btnSpeak = (ImageButton) v.findViewById(R.id.btnSpeak);
 		loop();
 
+		//This is the speak button, on the Main Screen
 		btnSpeak.setOnClickListener(new View.OnClickListener() {
 			
 			NewActivity.promptSpeechInput continuo = new promptSpeechInput();
