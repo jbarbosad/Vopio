@@ -7,17 +7,9 @@ import android.view.View.OnClickListener;
 
 import com.activity.utils.TouchEffect;
 
-/**
- * This is a common activity that all other activities of the app can extend to
- * inherit the common behaviors like setting a Theme to activity.
- */
 public class CustomActivity extends FragmentActivity implements OnClickListener
 {
 
-	/**
-	 * Apply this Constant as touch listener for views to provide alpha touch
-	 * effect. The view must have a Non-Transparent background.
-	 */
 	public static final TouchEffect TOUCH = new TouchEffect();
 
 	@Override
@@ -32,17 +24,9 @@ public class CustomActivity extends FragmentActivity implements OnClickListener
 	@Override
 	public void onClick(View v)
 	{
-		// TODO Auto-generated method stub
 
 	}
 
-	/**
-	 * Sets the touch and click listeners for a view..
-	 * 
-	 * @param id
-	 *            the id of View
-	 * @return the view
-	 */
 	public View setTouchNClick(int id)
 	{
 
@@ -51,13 +35,6 @@ public class CustomActivity extends FragmentActivity implements OnClickListener
 		return v;
 	}
 
-	/**
-	 * Sets the click listener for a view.
-	 * 
-	 * @param id
-	 *            the id of View
-	 * @return the view
-	 */
 	public View setClick(int id)
 	{
 

@@ -5,7 +5,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class TouchEffect is a Base Touch listener. It can be attached as touch
  * listener for any view that as some valid background drawable or color. It
@@ -14,9 +13,6 @@ import android.view.View.OnTouchListener;
 public class TouchEffect implements OnTouchListener
 {
 
-	/* (non-Javadoc)
-	 * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
-	 */
 	@Override
 	public boolean onTouch(View v, MotionEvent event)
 	{

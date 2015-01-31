@@ -10,18 +10,9 @@ import android.view.ViewGroup;
 import com.activity.R;
 import com.activity.custom.CustomActivity;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class Snippet is a Fragment that is displayed in the Main activity when
- * the user taps on Workouts tab or when user swipes to third page in ViewPager.
- * You can customize this fragment's contents as per your need.
- */
 public class Snippet extends Fragment implements OnClickListener
 {
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState)
@@ -32,14 +23,6 @@ public class Snippet extends Fragment implements OnClickListener
 		return v;
 	}
 
-	/**
-	 * Setup the view components for this fragment. You can write your code for
-	 * initializing the views, setting the adapters, touch and click listeners
-	 * etc.
-	 * 
-	 * @param v
-	 *            the base view of fragment
-	 */
 	private void setupView(View v)
 	{
 		View b = v.findViewById(R.id.pause);
@@ -51,9 +34,6 @@ public class Snippet extends Fragment implements OnClickListener
 		b.setOnTouchListener(CustomActivity.TOUCH);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-	 */
 	@Override
 	public void onClick(View v)
 	{

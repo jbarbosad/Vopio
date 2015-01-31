@@ -15,26 +15,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.activity.custom.CustomActivity;
-import com.activity.ui.History;
 import com.activity.ui.NewActivity;
 import com.activity.ui.Words;
 import com.activity.ui.Snippet;
 
-/**
- * The Activity Setting is launched when you taps on Setting icon on ActionBar in MainActivity.
- * It shows the custom useful layout components like custom SeekBar that you can use in your application layouts. 
- * 
- */
 public class Setting extends CustomActivity
 {
 
 	/** Check if the app is running. */
 	private boolean isRunning;
 
-
-	/* (non-Javadoc)
-	 * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -45,12 +35,6 @@ public class Setting extends CustomActivity
 		setDummyContents();
 	}
 
-	/**
-	 * This method will setup the top title bar (Action bar) content and display
-	 * values. It will also setup the custom background theme for ActionBar. You
-	 * can override this method to change the behavior of ActionBar for
-	 * particular Activity
-	 */
 	protected void setupActionBar()
 	{
 		final ActionBar actionBar = getActionBar();
@@ -63,9 +47,6 @@ public class Setting extends CustomActivity
 		actionBar.setHomeButtonEnabled(true);
 	}
 
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onDestroy()
-	 */
 	@Override
 	protected void onDestroy()
 	{
@@ -73,23 +54,19 @@ public class Setting extends CustomActivity
 		isRunning = false;
 	}
 
-	/**
-	 * Sets the dummy contents for views. You can remove this method or can
-	 * customize this method as per your needs. The thread in this method simply
-	 * used to create a progress bar effect for Progress bar.
-	 */
+
 	private void setDummyContents()
 	{
 		isRunning = true;
-		setTouchNClick(R.id.btnDemo);
+		//setTouchNClick(R.id.btnDemo);
 
 		new Thread(new Runnable() {
 			@Override
 			public void run()
 			{
-				final ProgressBar pBar = (ProgressBar) findViewById(R.id.progressBar1);
-				final TextView lbl1 = (TextView) findViewById(R.id.lblProgress1);
-				final TextView lbl2 = (TextView) findViewById(R.id.lblProgress2);
+				//final ProgressBar pBar = (ProgressBar) findViewById(R.id.progressBar1);
+				//final TextView lbl1 = (TextView) findViewById(R.id.lblProgress1);
+				//final TextView lbl2 = (TextView) findViewById(R.id.lblProgress2);
 				while (isRunning)
 				{
 					try
@@ -103,12 +80,12 @@ public class Setting extends CustomActivity
 						@Override
 						public void run()
 						{
-							int p = pBar.getProgress() + 5;
-							if (p > 100)
-								p = 0;
-							pBar.setProgress(p);
-							lbl1.setText(p + "MB/100MB");
-							lbl2.setText(p + "%");
+							//int p = pBar.getProgress() + 5;
+							//if (p > 100)
+							//	p = 0;
+							//pBar.setProgress(p);
+							//lbl1.setText(p + "MB/100MB");
+							//lbl2.setText(p + "%");
 						}
 					});
 				}

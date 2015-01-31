@@ -41,7 +41,7 @@ public class Words extends Fragment implements OnClickListener
 	public class RouteAdapter extends BaseAdapter
 	{
 		private TextView textView2;
-		/*
+		
 		public void updater (final ArrayList<String> result)
 		{
 			new Thread(new Runnable() {
@@ -62,7 +62,7 @@ public class Words extends Fragment implements OnClickListener
 				}
 			}).start();
 		}
-		 */
+		 
 		
 		
 		@Override
@@ -96,9 +96,6 @@ public class Words extends Fragment implements OnClickListener
 
 	}
 
-	/* (non-Javadoc)
-	 * @see android.view.View.OnClickListener#onClick(android.view.View)
-	 */
 	@Override
 	public void onClick(View v)
 	{

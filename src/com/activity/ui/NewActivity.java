@@ -1,154 +1,141 @@
 package com.activity.ui;
 
-import java.util.ArrayList;
-import java.util.Locale;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Button;
 
+import com.activity.AudioManagement;
 import com.activity.R;
 
 public class NewActivity extends Fragment
 {
-	/**
-	 * This is the code for recording continually using the Google speech-to-text library
-	 * */
-	private TextView txtSpeechInput;
-	private ImageButton btnSpeak;
-	private final int REQ_CODE_SPEECH_INPUT = 100;
-	public boolean validation = false;
-
+	public Button btnPlay;
+	public Button btnSave;
+	
+	private Thread play = null;
+	private Thread save = null;
+	
+	private AudioManagement audioManagement;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState)
-	{
-		View v = inflater.inflate(R.layout.new_activity, null);
-		
-		txtSpeechInput = (TextView) v.findViewById(R.id.txtSpeechInput);
-		btnSpeak = (ImageButton) v.findViewById(R.id.btnSpeak);
-		loop();
+	{	
+		final View v = inflater.inflate(R.layout.new_activity, null);
 
-		//This is the speak button, on the Main Screen
-		btnSpeak.setOnClickListener(new View.OnClickListener() {
-			
-			NewActivity.promptSpeechInput continuo = new promptSpeechInput();
-
-			@Override
-			public void onClick(View v) {
-				new Thread(continuo).run();
-			}
-		});
-		 
-		
-		//setupView(v);
+		setButtonHandlers(v);
+	    enableButtons(true,v);
+	    
 		return v;
 	}
 	
-	public void loop()
+	private void setButtonHandlers(View v) {
+	    ((Button) v.findViewById(R.id.btnPlay)).setOnClickListener(btnClick);
+	    ((Button) v.findViewById(R.id.btnSave)).setOnClickListener(btnClick);
+	}
+
+	private void enableButton(View v,int id, boolean isEnable) {
+	    ((Button) v.findViewById(id)).setEnabled(isEnable);
+	}
+
+	private void enableButtons(boolean isRecording, View v) {
+	    enableButton(v,R.id.btnPlay, isRecording);
+	    enableButton(v,R.id.btnSave, isRecording);
+	}
+	
+	private View.OnClickListener btnClick = new View.OnClickListener() {
+	    public void onClick(View v) {
+
+	    	audioManagement = new AudioManagement();
+	    	
+	        switch (v.getId()) {
+		        case R.id.btnPlay: {
+		            play = new Thread(new Runnable() {
+		            	public void run() {
+		            		audioManagement.play();
+		    			} 
+		    		});
+		    		play.start();
+		            break;
+		        }   
+		        case R.id.btnSave: {
+	               save = new Thread(new Runnable() {
+		    			public void run() {
+		    				File file =  new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Vopio/"+"reverseme.pcm");
+		    				save(file);
+		    			} 
+	               });
+	               save.start();
+	               break;
+		        }
+	        }
+	    }
+	};
+	
+	public void save(File file)
 	{
-		NewActivity.promptSpeechInput continuo = new promptSpeechInput();
-		new Thread(continuo).run();
-	}
-	
-	
-	
-	/**
-	 * Showing google speech input dialog
-	 * */
-	private class promptSpeechInput extends Thread {
+		File newFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Vopio/"+"reverseme1.pcm");
 		
-		@Override
-		public void run() {
+		if (newFile.exists())
+			newFile.delete();
+
+		// Create the new file.
+		try {
+			newFile.createNewFile();
+		} catch (IOException e) {
+		throw new IllegalStateException("Failed to create " + newFile.toString());
+		}
+		
+		try {
+			// Create a DataOuputStream to write the audio data into the saved file.
+			OutputStream os = new FileOutputStream(newFile);
+			BufferedOutputStream bos = new BufferedOutputStream(os);
+			DataOutputStream dos = new DataOutputStream(bos);
 			
-		Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-				RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-		intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-		intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
-				getString(R.string.speech_prompt));
-			try {
-				startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-			} catch (ActivityNotFoundException a) {
-				Toast.makeText(getParentFragment().getActivity().getBaseContext(),
-						getString(R.string.speech_not_supported),
-						Toast.LENGTH_SHORT).show();
+			// Create a DataInputStream to read the audio data back from the saved file.
+			InputStream is = new FileInputStream(file);
+			BufferedInputStream bis = new BufferedInputStream(is);
+			DataInputStream dis = new DataInputStream(bis);
+
+			int bufferSize = (int)(file.length());
+			short[] buffer = new short[bufferSize];
+			
+			int i = 0;
+			while(i < 108544)
+			{
+				buffer[i] = dis.readShort();
+				dos.writeShort(buffer[i]);
+				i++;
 			}
+			
+			dis.close();
+			dos.close();
+
+		} catch (Throwable t) {
+			Log.e("Saving audio","Saving Failed");
 		}
+		
 	}
 
-	/**
-	 * Receiving speech input
-	 * */
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		switch (requestCode) {
-		case REQ_CODE_SPEECH_INPUT: {
-			if (resultCode == -1 && null != data) {
-
-				final ArrayList<String> result = data
-						.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-				
-				//Words palavras = new Words();
-				//Words.RouteAdapter novo =  palavras.new RouteAdapter();
-				
-				new Thread(new Runnable() {
-	    			@Override
-	    			public void run()
-	    			{
-	    				try
-	    				{
-	    					Thread.sleep(1);
-
-	    				} catch (Exception e)
-	    				{
-	    					e.printStackTrace();
-	    				} finally
-	    				{
-	    					getActivity().runOnUiThread(new Runnable() {
-	    						@Override
-	    						public void run()
-	    						{
-	    							txtSpeechInput.setText(result.get(0));
-	    						}
-	    					});
-	    				}
-	    			}
-	    		}).start();
-				
-				new Thread(new Runnable() {
-	  				@Override
-	  				public void run() {
-	  					try {
-							Thread.sleep(200);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-	  					NewActivity.this.loop(); 
-	  				}
-	  			}).start();
-			}
-			break;
-		}
-
-		}
-	}
-	
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		this.getActivity().getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-		
 }

@@ -4,56 +4,10 @@
     android:layout_height="match_parent"
     android:background="@color/background" >
 
-    <LinearLayout
+   <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-
-        <LinearLayout
-            android:id="@+id/time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/image"
-            android:gravity="center"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Duration"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0:10:44"
-                android:textColor="@color/white"
-                android:textSize="50sp"
-                android:textStyle="normal" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/pause"
-                style="@style/btn_dark"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="PAUSE" />
-
-            <Button
-                android:id="@+id/finish"
-                style="@style/btn_yellow"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="PLAY" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -75,6 +29,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:background="@color/gray_border" />
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,40 +55,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp" >
         </LinearLayout>
-
-        <LinearLayout
+        
+            	<LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1" >
+            android:layout_height="wrap_content" >
 
+            <Button
+                android:id="@+id/pause"
+                style="@style/btn_dark"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="PAUSE" />
+
+            <Button
+                android:id="@+id/finish"
+                style="@style/btn_yellow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="PLAY" />
         </LinearLayout>
 
-        <View
-            android:id="@+id/view11111"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/gray_border" />
-<LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" >
-        </LinearLayout>
-<LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_weight="1" >
-
-        </LinearLayout>
-        <View
-            android:id="@+id/view1111"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/gray_border" />
-    </LinearLayout>
-
+ </LinearLayout>      
 </ScrollView>

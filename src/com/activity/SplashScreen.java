@@ -17,9 +17,6 @@ public class SplashScreen extends Activity
 	/** Check if the app is running. */
 	private boolean isRunning;
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -33,10 +30,6 @@ public class SplashScreen extends Activity
 
 	}
 
-	/**
-	 * Starts the count down timer for 3-seconds. It simply sleeps the thread
-	 * for 3-seconds.
-	 */
 	private void startSplash()
 	{
 
@@ -67,10 +60,6 @@ public class SplashScreen extends Activity
 		}).start();
 	}
 
-	/**
-	 * If the app is still running than this method will start the MainActivity
-	 * and finish the Splash.
-	 */
 	private synchronized void doFinish()
 	{
 
@@ -84,9 +73,7 @@ public class SplashScreen extends Activity
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see android.app.Activity#onKeyDown(int, android.view.KeyEvent)
-	 */
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{

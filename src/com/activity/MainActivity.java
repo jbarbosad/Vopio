@@ -1,33 +1,38 @@
 package com.activity;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.ActionBar;
 import android.content.Intent;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.activity.custom.CustomActivity;
-import com.activity.ui.History;
 import com.activity.ui.NewActivity;
-import com.activity.ui.Words;
 import com.activity.ui.Snippet;
+import com.activity.ui.Words;
 
 
-/**
- * The Activity MainActivity is the Main screen of the app and it holds all the
- * views and Fragments used in the app.
- * 
- */
 public class MainActivity extends CustomActivity
 {
 
@@ -37,26 +42,45 @@ public class MainActivity extends CustomActivity
 	/** The current selected tab. */
 	private View currentTab;
 
-	/* (non-Javadoc)
-	 * @see com.newsfeeder.custom.CustomActivity#onCreate(android.os.Bundle)
-	 */
+	public Timer timer;
+	
+	public boolean isRecording;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		setupActionBar();
+		
 		initTabs();
 		initPager();
+		
+		timer = new Timer();
+		audioSnippet();
 	}
-
-	/**
-	 * This method will setup the top title bar (Action bar) content and display
-	 * values. It will also setup the custom background theme for ActionBar. You
-	 * can override this method to change the behavior of ActionBar for
-	 * particular Activity
-	 */
+	
+	public void audioSnippet()
+	{
+		final MainActivity.recordContinually recordContinually = new recordContinually();			
+		
+		new Thread(recordContinually).start();
+		
+		timer.scheduleAtFixedRate(
+			new TimerTask() {	
+				@Override
+				public void run() {
+					recordContinually.recording();
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}, 0,10000);
+	}
+	
 	protected void setupActionBar()
 	{
 		final ActionBar actionBar = getActionBar();
@@ -69,42 +93,29 @@ public class MainActivity extends CustomActivity
 	}
 
 
-	/**
-	 * Initialize the tabs. You can write your code related to Tabs.
-	 */
 	private void initTabs()
 	{
 		findViewById(R.id.tab1).setOnClickListener(this);
 		findViewById(R.id.tab2).setOnClickListener(this);
 		findViewById(R.id.tab3).setOnClickListener(this);
-		findViewById(R.id.tab4).setOnClickListener(this);
 		setCurrentTab(0);
 	}
+	
 
-	/* (non-Javadoc)
-	 * @see com.activity.custom.CustomActivity#onClick(android.view.View)
-	 */
 	@Override
 	public void onClick(View v)
 	{
 		super.onClick(v);
+		
 		if (v.getId() == R.id.tab1)
 			pager.setCurrentItem(0, true);
 		else if (v.getId() == R.id.tab2)
 			pager.setCurrentItem(1, true);
 		else if (v.getId() == R.id.tab3)
 			pager.setCurrentItem(2, true);
-		else if (v.getId() == R.id.tab4)
-			pager.setCurrentItem(3, true);
-	}
 
-	/**
-	 * Sets the current selected tab. Called whenever a Tab is selected either
-	 * by clicking on Tab button or by swiping the ViewPager. You can write your
-	 * code related to tab selection actions.
-	 *
-	 * @param page the current page of ViewPager
-	 */
+	}
+	
 	private void setCurrentTab(int page)
 	{
 		if (currentTab != null)
@@ -115,16 +126,11 @@ public class MainActivity extends CustomActivity
 			currentTab = findViewById(R.id.tab2);
 		else if (page == 2)
 			currentTab = findViewById(R.id.tab3);
-		else
-			currentTab = findViewById(R.id.tab4);
 		currentTab.setEnabled(false);
 		getActionBar().setTitle(((Button)currentTab).getText().toString());
 	}
 
-	/**
-	 * Initialize the ViewPager. You can customize this method for writing the
-	 * code related to view pager actions.
-	 */
+
 	private void initPager()
 	{
 		pager = (ViewPager) findViewById(R.id.pager);
@@ -148,28 +154,96 @@ public class MainActivity extends CustomActivity
 		});
 		pager.setAdapter(new DummyPageAdapter(getSupportFragmentManager()));
 	}
+	
+	public class recordContinually extends Thread 
+	{
+		public final int frequency = 11025;
+		public final int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
+		public final int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+		
+		// Create a DataOuputStream to write the audio data into the saved file.
+		OutputStream os;
+		BufferedOutputStream bos;
+		DataOutputStream dos;
+				
 
-	/**
-	 * The Class DummyPageAdapter is a dummy pager adapter for ViewPager. You
-	 * can customize this adapter as per your needs.
-	 */
+		// Create a new AudioRecord object to record the audio.
+		public final int bufferSize = AudioRecord.getMinBufferSize(frequency, channelConfiguration, audioEncoding);
+		public AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 
+		frequency, channelConfiguration, 
+		audioEncoding, bufferSize);
+		
+		final File file;
+		
+		public short[] buffer;
+		
+		public recordContinually()
+		{
+			file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Vopio/"+"reverseme.pcm");
+
+			// Delete any previous recording.
+			if (file.exists())
+				file.delete();
+
+			// Create the new file.
+			try {
+				file.createNewFile();
+				
+				os = new FileOutputStream(file);
+				bos = new BufferedOutputStream(os);
+				dos = new DataOutputStream(bos);
+				
+			} catch (IOException e) {
+			throw new IllegalStateException("Failed to create " + file.toString());
+			}	
+
+		}
+		
+		//@Override
+		public void recording()
+		{
+			try{
+				buffer = new short[bufferSize]; 
+				
+				audioRecord.startRecording();
+				
+				while(isRecording){
+					int bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
+					//audioRecord.read(buffer, 0, bufferSize);
+					
+					for (int i = 0; i < bufferReadResult; i++)
+						dos.writeShort(buffer[i]);	
+					
+					if(isRecording = false)
+						break;
+				}
+			}catch(Throwable t) {
+				Log.e("AudioRecord","Recording Failed");
+			}
+			
+			audioRecord.stop();
+			//audioRecord.release();
+			
+			timer.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					//isRecording = false;
+					MainActivity.this.audioSnippet();				
+				}
+			}, 0);
+		}	
+	}
+
+
 	private class DummyPageAdapter extends FragmentPagerAdapter
 	{
 
-		/**
-		 * Instantiates a new dummy page adapter.
-		 * 
-		 * @param fm
-		 *            the FragmentManager
-		 */
 		public DummyPageAdapter(FragmentManager fm)
 		{
 			super(fm);
 		}
 
-		/* (non-Javadoc)
-		 * @see android.support.v4.app.FragmentPagerAdapter#getItem(int)
-		 */
 		@Override
 		public Fragment getItem(int pos)
 		{
@@ -177,14 +251,10 @@ public class MainActivity extends CustomActivity
 				return new NewActivity();
 			if (pos == 1)
 				return new Words();
-			if (pos == 2)
-				return new Snippet();
-			return new History();
+			
+			return new Snippet();
 		}
 
-		/* (non-Javadoc)
-		 * @see android.support.v4.view.PagerAdapter#getCount()
-		 */
 		@Override
 		public int getCount()
 		{
@@ -193,9 +263,6 @@ public class MainActivity extends CustomActivity
 
 	}
 
-	/* (non-Javadoc)
-	 * @see com.newsfeeder.custom.CustomActivity#onCreateOptionsMenu(android.view.Menu)
-	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -204,9 +271,6 @@ public class MainActivity extends CustomActivity
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.activity.custom.CustomActivity#onOptionsItemSelected(android.view.MenuItem)
-	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -217,6 +281,4 @@ public class MainActivity extends CustomActivity
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-
 }
